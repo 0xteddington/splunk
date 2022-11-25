@@ -1,0 +1,416 @@
+ <dashboard stylesheet="lab_overview.css">
+  <label>Overview</label>
+  <row>
+    <panel>
+      <title>WAN Download (Current)</title>
+      <single>
+        <search>
+          <query>sourcetype=snmp:fw interface=vtnet0 | eval inmbps = round(inbps/1024/1024, 2) | dedup interface | table inmbps</query>
+          <earliest>rt-30s</earliest>
+          <latest>rt</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[200,290]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Mb/s</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>WAN Upload (Current)</title>
+      <single>
+        <search>
+          <query>sourcetype=snmp:fw interface=vtnet0 | eval outmbps = round(outbps/1024/1024, 2) | dedup interface | table outmbps</query>
+          <earliest>rt-30s</earliest>
+          <latest>rt</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[18,20]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Mb/s</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Wan Download (Max; 1h)</title>
+      <single>
+        <search>
+          <query>sourcetype=snmp:fw interface=vtnet0 
+| eval inmbps = round(inbps/1024/1024, 2) 
+| timechart max(inmbps) span=1h</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[300,350]</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unit">Mb/s</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>WAN Upload (Max; 1h)</title>
+      <single>
+        <search>
+          <query>sourcetype=snmp:fw interface=vtnet0 
+| eval outmbps = round(outbps/1024/1024, 2) 
+| timechart max(outmbps) span=1h</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[20,22]</option>
+        <option name="unit">Mb/s</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>WAN Speedtest (Mb/s)</title>
+      <chart>
+        <search>
+          <query>sourcetype=speedtest-cli | timechart max(speed_down) max(speed_up) span=10m | rename max(speed_down) AS Download, max(speed_up) as Upload</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>WAN Latency (ms)</title>
+      <chart>
+        <search>
+          <query>sourcetype=speedtest-cli | timechart max(latency) span=10m</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Battery Backup</title>
+      <single>
+        <search>
+          <query>index=main sourcetype=snmp:ups | tail 1 | table EstMinRemain</query>
+          <earliest>-5m</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0xd93f3c","0xf58f39","0x65a637"]</option>
+        <option name="rangeValues">[10,20]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Runtime</option>
+        <option name="unit">min</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <drilldown>
+          <link target="_blank">/app/Splunk_app_for_homelab/power_consumption</link>
+        </drilldown>
+      </single>
+      <single>
+        <search>
+          <query>index=main sourcetype=snmp:ups | tail 1 | table upsOutputWatts</query>
+          <earliest>-5m</earliest>
+          <latest>now</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[800,1250]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Load</option>
+        <option name="unit">watts</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <drilldown>
+          <link target="_blank">/app/Splunk_app_for_homelab/power_consumption</link>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <title>Storage Space Used</title>
+      <single>
+        <search>
+          <query>index=storage host=mjolnir sourcetype=zfs:list pool=tank_data_01
+| eval usedPercent=round((((usedBytes)/(usedBytes+availBytes))*100),2)
+| timechart latest(usedPercent)</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[75,90]</option>
+        <option name="trendInterval">-24h</option>
+        <option name="underLabel">mjolnir</option>
+        <option name="unit">%</option>
+        <option name="useColors">1</option>
+        <drilldown>
+          <link target="_blank">/app/Splunk_app_for_homelab/zfs?form.dropdown1=mjolnir&amp;form.dropdown2=tank_data_01</link>
+        </drilldown>
+      </single>
+      <single>
+        <search>
+          <query>index=storage host=jormungandr sourcetype=zfs:list pool=tank_vm_01
+| eval usedPercent=round((((usedBytes)/(usedBytes+availBytes))*100),2)
+| timechart latest(usedPercent)</query>
+          <earliest>-30d@d</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">all</option>
+        <option name="numberPrecision">0.00</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[75,90]</option>
+        <option name="trendInterval">-24h</option>
+        <option name="underLabel">jormungandr</option>
+        <option name="unit">%</option>
+        <option name="useColors">1</option>
+        <drilldown>
+          <link target="_blank">/app/Splunk_app_for_homelab/zfs?form.dropdown1=jormungandr&amp;form.dropdown2=tank_vm_01</link>
+        </drilldown>
+      </single>
+    </panel>
+    <panel>
+      <title>Plex Streams</title>
+      <single>
+        <search>
+          <query>index=main sourcetype=plex:sessions | tail 1 | table playingSessions</query>
+          <earliest>rt-5m</earliest>
+          <latest>rt</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[4,7]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">Active</option>
+      </single>
+      <single>
+        <search>
+          <query>index=main sourcetype=plex:sessions | tail 1 | table pausedSessions</query>
+          <earliest>rt-5m</earliest>
+          <latest>rt</latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[4,7]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="underLabel">Paused</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Backup Status</title>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrive_heather
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Userdrives [Heather]</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrive_terry
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Userdrives [Terry]</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrives_bitbucket
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="height">115</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">BitBucket</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrives_confluence
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Confluence</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrives_freepbx
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">FreePBX</option>
+        <option name="useColors">1</option>
+      </single>
+      <single>
+        <search>
+          <query>index=storage sourcetype=find:backup_userdrives_mailinabox
+| head 1
+| eval isCurrent=if(modifiedTime &gt; relative_time(now(), "-48h"), "1", "0") 
+| table isCurrent</query>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="colorMode">block</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="underLabel">Mail-in-a-Box</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+  </row>
+</dashboard>
